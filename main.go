@@ -12,7 +12,7 @@ import (
     "github.com/gorilla/mux"
     "github.com/gorilla/handlers"
     "github.com/tarm/serial"
-}
+)
 
 var log = logging.MustGetLogger("blaulicht")
 var format = logging.MustStringFormatter(
