@@ -26,8 +26,8 @@ func Alert(w http.ResponseWriter, r *http.Request, serialPort *serial.Port) {
 
   log.Debugf("Received alerts: GroupLabels=%v, CommonLabels=%v", data.GroupLabels, data.CommonLabels)
   for _, alert := range data.Alerts {
-    if alert.Labels["severity"] == "CRITICAL" && alert.Status == "firing" {
-      log.Debugf("Received critical alert: Labels=%v,Annotations=%v", alert.Labels, alert.Annotations)
+    if alert.Labels["severity"] == "critical" && alert.Status == "firing" {
+      log.Debugf("Received critical alert: Status=%s,Labels=%v,Annotations=%v", alert.Status, alert.Labels, alert.Annotations)
 
       //TODO: put into submodule keeping track of the status
       serialPort.Write([]byte("A1\r\n")) //TODO: read response
