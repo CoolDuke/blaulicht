@@ -3,6 +3,7 @@ package config
 import (
     "fmt"
     "errors"
+    "time"
     "io/ioutil"
     "encoding/base64"
 
@@ -23,6 +24,7 @@ type Config struct {
   LdapBindPassword       string                       `yaml:"ldapBindPassword"`
   AuthTokenSigningKey    string                       `yaml:"authTokenSigningKey"`
   InitialAdminPassword   string                       `yaml:"initialAdminPassword"`
+  AlertDuration          time.Duration                `yaml:"alertDuration"`
 }
 
 func GetConfig(log *logging.Logger, filename string) (Config, error) {
@@ -113,6 +115,10 @@ func GetConfig(log *logging.Logger, filename string) (Config, error) {
     return config, err
   }
   config.AuthTokenSigningKey = string(decodedAuthTokenSigningKey)
+
+  if config.AlertDuration == 0 {
+    config.AlertDuration = 10
+  }
 
   return config, nil
 }

@@ -2,16 +2,15 @@ package main
 
 import (
     "os"
-    "time"
     "net/http"
 
     "blaulicht/config"
     "blaulicht/api"
+    "blaulicht/helpers"
 
     "github.com/op/go-logging"
     "github.com/gorilla/mux"
     "github.com/gorilla/handlers"
-    "github.com/tarm/serial"
 )
 
 var log = logging.MustGetLogger("blaulicht")
@@ -39,9 +38,9 @@ func main() {
       os.Exit(1)
     }
     api.Conf = conf
+    helpers.Conf = conf
 
-    //open serial port
-    serialPort, err := serial.OpenPort(&serial.Config{Name: conf.SerialPortDevice, Baud: conf.SerialPortBaudRate, ReadTimeout: time.Second * 5})
+    serialPort, err := helpers.NewSerialPort()
     if err != nil {
       log.Errorf("Unable to open serial port: %v", err.Error())
       os.Exit(2)

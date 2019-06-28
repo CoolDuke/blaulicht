@@ -9,14 +9,13 @@ import (
   "blaulicht/helpers"
 
   "github.com/op/go-logging"
-  "github.com/tarm/serial"
   "github.com/prometheus/alertmanager/template"
 )
 
 var log = logging.MustGetLogger("blaulicht")
 var Conf config.Config
 
-func Alert(w http.ResponseWriter, r *http.Request, serialPort *serial.Port) {
+func Alert(w http.ResponseWriter, r *http.Request, serialPort *helpers.SerialPort) {
   data := template.Data{}
   if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
     log.Error("Unable to parse incoming json")
@@ -29,12 +28,20 @@ func Alert(w http.ResponseWriter, r *http.Request, serialPort *serial.Port) {
     if alert.Labels["severity"] == "critical" && alert.Status == "firing" {
       log.Debugf("Received critical alert: Status=%s,Labels=%v,Annotations=%v", alert.Status, alert.Labels, alert.Annotations)
 
-      //TODO: put into submodule keeping track of the status
-      serialPort.Write([]byte("A1\r\n")) //TODO: read response
+      err := serialPort.SendCommand("A1")
+      if err != nil {
+        log.Error("Error while enabling Blaulicht: " + err.Error())
+        return
+      }
       log.Info("Blaulicht enabled")
 
-      time.AfterFunc(10 * time.Second, func() {
-        serialPort.Write([]byte("A0\r\n")) //TODO: read response
+      //schedule turning it off again
+      time.AfterFunc(Conf.AlertDuration * time.Second, func() {
+        err := serialPort.SendCommand("A0")
+        if err != nil {
+          log.Error("Error while disabling Blaulicht :" + err.Error())
+          return
+        }
         log.Info("Blaulicht disabled")
       })
 
