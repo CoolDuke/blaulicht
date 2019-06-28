@@ -31,6 +31,7 @@ func Alert(w http.ResponseWriter, r *http.Request, serialPort *helpers.SerialPor
       err := serialPort.SendCommand("A1")
       if err != nil {
         log.Error("Error while enabling Blaulicht: " + err.Error())
+        helpers.HttpError(w, http.StatusInternalServerError, "alert", err.Error())
         return
       }
       log.Info("Blaulicht enabled")
