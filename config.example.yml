@@ -1,5 +1,7 @@
 listenAddress: :8080
 serialPort: /dev/ttyUSB0
+serialPortBaudRate: 9600
+alertDuration: 10
 
 ldapEnabled: false
 ldapHosts: [ "server1:3269", "server2:3269" ]

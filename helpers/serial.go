@@ -60,7 +60,7 @@ func (s *SerialPort) SendCommand(command string) error {
     return err
   }
   log.Debugf("Serial response: %s", string(buf[:n])) 
-  if string(buf[:n]) != command + "\r\n" {
+  if string(buf[:n]) != "Ok\r\n" {
     log.Errorf("Command didn't succeed")
     return errors.New("Arduino returned an error")
   }
