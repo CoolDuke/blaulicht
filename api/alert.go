@@ -5,8 +5,8 @@ import (
   "net/http"
   "encoding/json"
 
-  "blaulicht/config"
-  "blaulicht/helpers"
+  "github.com/coolduke/blaulicht/config"
+  "github.com/coolduke/blaulicht/helpers"
 
   "github.com/op/go-logging"
   "github.com/prometheus/alertmanager/template"
