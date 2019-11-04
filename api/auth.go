@@ -8,7 +8,7 @@ import (
   "crypto/tls"
   "encoding/json"
 
-  "blaulicht/helpers"
+  "github.com/coolduke/blaulicht/helpers"
 
   "gopkg.in/ldap.v3"
   "github.com/dgrijalva/jwt-go"
