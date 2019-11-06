@@ -4,7 +4,7 @@ import (
     "time"
     "errors"
 
-    "github.com/coolduke/blaulicht/config"
+    "github.com/freenetgigital/blaulicht/config"
 
     "github.com/op/go-logging"
     "github.com/tarm/serial"

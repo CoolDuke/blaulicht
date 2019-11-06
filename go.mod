@@ -1,4 +1,4 @@
-module github.com/coolduke/blaulicht
+module github.com/freenetgigital/blaulicht
 
 go 1.13
 

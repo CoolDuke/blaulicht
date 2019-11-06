@@ -5,8 +5,8 @@ import (
   "net/http"
   "encoding/json"
 
-  "github.com/coolduke/blaulicht/config"
-  "github.com/coolduke/blaulicht/helpers"
+  "github.com/freenetgigital/blaulicht/config"
+  "github.com/freenetgigital/blaulicht/helpers"
 
   "github.com/op/go-logging"
   "github.com/prometheus/alertmanager/template"
@@ -14,9 +14,11 @@ import (
 
 var log = logging.MustGetLogger("blaulicht")
 var Conf config.Config
+var lastAlert = time.Now()
 
 func Alert(w http.ResponseWriter, r *http.Request, serialPort *helpers.SerialPort) {
   data := template.Data{}
+
   if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
     log.Error("Unable to parse incoming json")
     http.Error(w, "Unable to parse incoming json: " + err.Error(), http.StatusBadRequest)
@@ -28,25 +30,34 @@ func Alert(w http.ResponseWriter, r *http.Request, serialPort *helpers.SerialPor
     if alert.Labels["severity"] == "critical" && alert.Status == "firing" {
       log.Debugf("Received critical alert: Status=%s,Labels=%v,Annotations=%v", alert.Status, alert.Labels, alert.Annotations)
 
-      err := serialPort.SendCommand("A1")
-      if err != nil {
-        log.Error("Error while enabling Blaulicht: " + err.Error())
-        helpers.HttpError(w, http.StatusInternalServerError, "alert", err.Error())
-        return
-      }
-      log.Info("Blaulicht enabled")
+      if time.Now().After(lastAlert.Add(time.Second * Conf.AlertSilence)) {
+        log.Info("Alert triggerd")
+        lastAlert = time.Now()
 
-      //schedule turning it off again
-      time.AfterFunc(Conf.AlertDuration * time.Second, func() {
-        err := serialPort.SendCommand("A0")
+        err := serialPort.SendCommand("A1")
         if err != nil {
-          log.Error("Error while disabling Blaulicht :" + err.Error())
+          log.Error("Error while enabling Blaulicht: " + err.Error())
+          helpers.HttpError(w, http.StatusInternalServerError, "alert", err.Error())
           return
         }
-        log.Info("Blaulicht disabled")
-      })
+        log.Info("Blaulicht enabled")
 
-      helpers.HttpRespondObject(w, http.StatusCreated, "Blaulicht started", data)
+        //schedule turning it off again
+        time.AfterFunc(Conf.AlertDuration * time.Second, func() {
+          err := serialPort.SendCommand("A0")
+          if err != nil {
+            log.Error("Error while disabling Blaulicht :" + err.Error())
+            return
+          }
+          log.Info("Blaulicht disabled")
+        })
+        helpers.HttpRespondObject(w, http.StatusCreated, "Blaulicht started", data)
+      }else{
+        log.Info("Alert silenced")
+
+        lastAlert = time.Now()
+        helpers.HttpRespondObject(w, http.StatusCreated, "Blaulicht silenced", data)
+      }
       return
     }
   }
