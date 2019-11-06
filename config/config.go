@@ -25,6 +25,7 @@ type Config struct {
   AuthTokenSigningKey    string                       `yaml:"authTokenSigningKey"`
   InitialAdminPassword   string                       `yaml:"initialAdminPassword"`
   AlertDuration          time.Duration                `yaml:"alertDuration"`
+  AlertSilence           time.Duration                `yaml:"alertSilence"`
 }
 
 func GetConfig(log *logging.Logger, filename string) (Config, error) {

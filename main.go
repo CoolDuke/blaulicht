@@ -4,9 +4,9 @@ import (
     "os"
     "net/http"
 
-    "github.com/coolduke/blaulicht/config"
-    "github.com/coolduke/blaulicht/api"
-    "github.com/coolduke/blaulicht/helpers"
+    "github.com/freenetgigital/blaulicht/config"
+    "github.com/freenetgigital/blaulicht/api"
+    "github.com/freenetgigital/blaulicht/helpers"
 
     "github.com/op/go-logging"
     "github.com/gorilla/mux"
